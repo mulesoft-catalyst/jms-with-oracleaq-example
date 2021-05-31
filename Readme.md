@@ -57,7 +57,7 @@ Grant execute ON sys.dbms_aqjms TO jmsuser;
 
 Execute the following SQL commands using sqlplus, Oracle SQL Developer or an SQL client application of your choice:
 
-```PLSQL
+```SQL
 /*Create Text message queue*/
 exec DBMS_AQADM.CREATE_QUEUE_TABLE (queue_table => 'mule_text_queue_table', queue_payload_type => 'sys.aq$_jms_text_message');
 exec DBMS_AQADM.CREATE_QUEUE (queue_name => 'mule_text_queue', queue_table => 'mule_text_queue_table');
@@ -185,7 +185,7 @@ _PLease ignore xml validation tag error ("One of the following elements: [jndi-c
 
 JMS message type MapMessage only able to receive JAVA MAP as part of the message body (other message body type like string, bytes, will be rejected). Thus, the payload need to be transformed to Map as follow:
 
-```dw
+```
 %dw 2.0
 output application/java
 ---
@@ -199,7 +199,7 @@ output application/java
 
 ObjectMessage JMS message type expecting an instance of JAVA Objects to be sent as part of JMS Message body ((other message body type like string, maps will be rejected)). To do so the application required instantiate any Java object from the pre-defined POJO class as follows:
 
-```dw
+```
 %dw 2.0
 import java!com::test::jms::Message
 output application/java
