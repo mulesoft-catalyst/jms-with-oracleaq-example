@@ -1,0 +1,7 @@
+oracle:
+  aq:
+    host: ""
+    port: "1521"
+    sid: ""
+    username: ""
+    password: ""

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:spring="http://www.mulesoft.org/schema/mule/spring"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<spring:config name="Spring_Config" doc:name="Spring Config" doc:id="36cb9e37-cfa0-4b7f-b648-11e4ada2a26b" files="beans.xml" />
+	<jms:config name="jms_oracle_aq" doc:name="JMS Config" doc:id="930496da-dea2-43c7-ad16-4e53571c7235" >
+		<jms:generic-connection connectionFactory="oraAQConnectionFactory" />
+	</jms:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="259c47ac-d959-4631-a926-df39fdf92662" file="config.yaml" />
+	<flow name="producerExampleFlow" doc:id="c1e642ac-da3f-4855-b7b0-e64584970bc0" >
+		<scheduler doc:name="Scheduler" doc:id="ab552cd4-2a62-4fea-927a-2bfa9109a837" >
+			<scheduling-strategy >
+				<fixed-frequency timeUnit="DAYS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<set-payload value='#[%dw 2.0
+output application/json
+---
+{
+	"test":"message"
+}]' doc:name="Set Payload" doc:id="92081e70-650f-4960-9ac5-f44df562306b" />
+		<jms:publish doc:name="Publish" doc:id="f5d0761b-8dfd-4d1b-9e22-a2d429e9a67b" config-ref="jms_oracle_aq" destination="mule_text_queue">
+			<jms:message >
+				<jms:body ><![CDATA[#[%dw 2.0
+output application/java
+---
+write(payload, "application/json")]]]></jms:body>
+			</jms:message>
+		</jms:publish>
+		<jms:publish doc:name="Publish" doc:id="f5ca9dde-a482-4f98-a52f-1f1493611e16" config-ref="jms_oracle_aq" destination="mule_map_queue">
+			<jms:message >
+				<jms:body ><![CDATA[#[%dw 2.0
+output application/java
+---
+{
+	"Message":"OracleAQ",
+	"JMSType":"Map"
+}]]]></jms:body>
+			</jms:message>
+		</jms:publish>
+		<jms:publish doc:name="Publish" doc:id="f77b8335-0339-455c-bf89-8f3612f0c670" destination="mule_object_queue" config-ref="jms_oracle_aq">
+			<jms:message >
+				<jms:body ><![CDATA[#[%dw 2.0
+import java!com::test::jms::Message
+output application/java
+---
+Message::new("10000824439","70327557510","a2P1s000000UmLTEA0")]]]></jms:body>
+			</jms:message>
+		</jms:publish>
+	</flow>
+	<flow name="consumerExampleFlow" doc:id="86787273-e9b3-4c50-9474-19e258f37fde" >
+		<jms:listener doc:name="On New Message" doc:id="cbc31953-74b5-48d6-a11f-2cf4456a8607" config-ref="jms_oracle_aq" destination="mule_text_queue" primaryNodeOnly="false"/>
+		<logger level="INFO" doc:name="Logger" doc:id="fe3a2b5b-2529-43e9-b5d2-d797b7ed7a78" message="queue : #[payload]"/>
+	</flow>
+</mule>

@@ -1,0 +1,41 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context-4.2.xsd
+      http://www.springframework.org/schema/security
+      http://www.springframework.org/schema/security/spring-security-4.2.xsd">
+	
+	<!-- Example for XA JMS Resources -->
+	<!-- <bean id="oraXAConnectionFactory" class="oracle.jms.AQjmsXAConnectionFactory">
+		<constructor-arg index="0" ref="oraAQDataSourceXA"/>
+	</bean>
+	
+	<bean id="oraAQDataSourceXA" class="oracle.ucp.jdbc.PoolXADataSourceImpl">
+			<property name="URL"	value="jdbc:oracle:thin:@//0.0.0.0:1521/xe" />
+			<property name="user" value="system" />
+			<property name="password" value="oracle" />
+			<property name="connectionFactoryClassName" value="oracle.jdbc.xa.client.OracleXADataSource" />
+			<property name="minPoolSize" value="1" />
+			<property name="maxPoolSize" value="20" />
+			<property name="connectionWaitTimeout" value="5" />
+			<property name="validateConnectionOnBorrow" value="true" />
+		</bean>
+ -->
+	<bean id="oraAQDataSource" class="oracle.ucp.jdbc.PoolDataSourceImpl">
+			<property name="URL" value="jdbc:oracle:thin:@//${oracle.aq.host}:${oracle.aq.port}/${oracle.aq.sid}" />
+			<property name="user" value="${oracle.aq.username}" />
+			<property name="password" value="${oracle.aq.password}" />
+			<property name="connectionFactoryClassName" value="oracle.jdbc.pool.OracleDataSource" />
+			<property name="minPoolSize" value="1" />
+			<property name="maxPoolSize" value="20" />
+			<property name="connectionWaitTimeout" value="5" />
+			<property name="validateConnectionOnBorrow" value="true" />
+		</bean>
+ 	<bean id="oraAQConnectionFactory" class="oracle.jms.AQjmsConnectionFactory">
+			<property name="datasource" ref="oraAQDataSource" />
+		</bean>
+</beans>
